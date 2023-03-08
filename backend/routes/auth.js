@@ -4,10 +4,11 @@ const { body, validationResult } = require('express-validator');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const fetchUser = require('../middleware/fetchUser');
 
 const JWT_SECRET = "confidential";
 
-// creating a user when a POST request to /auth/createuser is sent. 
+// ROUTE 1: creating a user when a POST request to /auth/createuser is sent. 
 router.post("/createuser",
 
     // basic checks using express validator 
@@ -61,7 +62,7 @@ router.post("/createuser",
     })
 
 
-// Authenticating a user while logging in - endpoint = /auth/login
+// ROUTE 2: Authenticating a user while logging in - endpoint = /auth/login
 router.post("/login",
     body('email', 'Enter a valid email').isEmail(),
     body('password', 'Password cannot be blank').exists(), // Password cannot be blank 
@@ -69,7 +70,7 @@ router.post("/login",
 
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() })
+            return res.status(400).json({ errors: errors.array()})
         } 
 
         const {email, password} = req.body; 
@@ -102,5 +103,18 @@ router.post("/login",
 
     })
 
+
+// ROUTE 3: Get logged in user details or decoding JWT.  
+router.post("/getuser", fetchUser ,async (req, res) => { 
+        try {
+            let userID = req.user.id; 
+            const user = await User.findById(userID).select("-password"); 
+            res.send(user);  
+
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({ "error": "Some error occured" });
+        }
+    })
 module.exports = router
 
