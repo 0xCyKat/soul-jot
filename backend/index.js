@@ -7,7 +7,7 @@ const app = express()
 app.use(express.json()); 
 
 app.use("/auth", require("./routes/auth")) // using router package (expres package)
-// app.use("/notes", require("./routes/notes"))
+app.use("/notes", require("./routes/notes"))
 
 
 app.listen(5000, ()=>{
