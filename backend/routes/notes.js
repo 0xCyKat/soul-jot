@@ -10,9 +10,9 @@ router.get("/fetchAllNotes", fetchUser,
         try {
             const notes = await Note.find({ user: req.user.id });
             res.json(notes);
-        } catch(err){
+        } catch (err) {
             console.log(err);
-            res.status(500).json({ "error": "Internal error occured"});
+            res.status(500).json({ "error": "Internal error occured" });
         }
     })
 
@@ -35,36 +35,64 @@ router.post('/addNote', fetchUser,
 
             const savedNote = await note.save();
             res.send(savedNote);
-        } catch(err){
+        } catch (err) {
             console.log(err);
-            res.status(500).json({ "error": "Internal error occured"});
+            res.status(500).json({ "error": "Internal error occured" });
         }
-    }) 
+    })
 
 
 // ROUTE 3: Endpoint for updating notes 
+router.put('/updateNote/:id', fetchUser, async (req, res) => {
+    const { title, description } = req.body;
 
-router.put('/updateNote/:id', fetchUser, async (req,res) => {
-    const {title, description} = req.body;
-    
-    // create newNote object
+    try {
 
-    const newNote = {}; 
-    if(title){newNote.title = title}
-    if(description){newNote.description = description}
+        // create newNote object
+        const newNote = {};
+        if (title) { newNote.title = title }
+        if (description) { newNote.description = description }
 
-    // find note and update it
-    let note = await Note.findById(req.params.id); 
+        // find note and update it
+        let note = await Note.findById(req.params.id);
 
-    if(!note){
-        return res.status(404).json({"error":"Note not found"}); 
+        if (!note) {
+            return res.status(404).json({ "error": "Note not found" });
+        }
+
+        if (note.user.toString() !== req.user.id) {
+            return res.status(401).json({ "error": "Access Denied" });
+        }
+
+        note = await Note.findByIdAndUpdate(req.params.id, { $set: newNote }, { new: true });
+        res.json(note);
     }
-
-    if(note.user.toString() !== req.user.id){
-        return res.status(401).json({"error":"Access Denied"}); 
+    catch (err) {
+        console.log(err);
+        res.status(500).json({ "error": "Internal error occured" });
     }
+})
 
-    note = await Note.findByIdAndUpdate(req.params.id, {$set: newNote}, {new:true}); 
-    res.json(note); 
+// ROUTE 4: Endpoint for deleting notes 
+router.delete('/deleteNote/:id', fetchUser, async (req, res) => {
+
+    try {
+        // finding and deleting note
+        let note = await Note.findById(req.params.id);
+
+        if (!note) {
+            return res.status(404).json({ "error": "Note not found" });
+        }
+
+        if (note.user.toString() !== req.user.id) {
+            return res.status(401).json({ "error": "Access Denied" });
+        }
+
+        note = await Note.findByIdAndDelete(req.params.id);
+        res.send("note deleted");
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ "error": "Internal error occured" });
+    }
 })
 module.exports = router; 
