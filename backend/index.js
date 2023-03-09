@@ -11,6 +11,6 @@ app.use("/notes", require("./routes/notes"))
 
 
 app.listen(5000, ()=>{
-    console.log("app is listening on port 5000")
+    console.log("SoulJot backend is listening on port 5000")
 })
 

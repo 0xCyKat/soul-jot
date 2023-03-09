@@ -1,6 +1,7 @@
-import React from 'react';
-
+import React  from 'react';
+import Notes from './Notes';
 function Home() {
+  
   return (
     <div className='container'>
       <h2>Add Notes</h2>
@@ -22,9 +23,8 @@ function Home() {
       </form> 
       <hr /> 
 
-      <div className="container">
-        <h2>Your Notes</h2>
-      </div>
+      <Notes/> 
+            
     </div>
   );
 }
