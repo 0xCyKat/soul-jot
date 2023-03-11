@@ -17,9 +17,14 @@ function NavBar() {
             </li>
             <li className="nav-item">
               <Link className={`nav-link ${location.pathname === '/about' ? "active" : ""}`} to="/about">About</Link>
-            </li>
+            </li> 
           </ul>
-        </div>
+
+          <form className='d-flex mx-2'>
+            <Link to='/login' className='btn btn-primary mx-1'>Login</Link>
+            <Link to='/signup' className='btn btn-primary mx-1'>Signup</Link>
+          </form>
+        </div> 
       </div>
     </nav>
 

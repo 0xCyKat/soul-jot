@@ -19,7 +19,6 @@ router.post("/createuser",
     async (req, res) => {
 
         // if there are any errors it returns if not then it will create the user
-
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() })
@@ -27,16 +26,16 @@ router.post("/createuser",
 
         try {
             let user = await User.findOne({ email: req.body.email });
-
+            let success = false;  
             // checking if duplicate user exists
 
             if (user) {
-                return res.status(400).json({ error: "Email already exists" });
+                return res.status(400).json({ success, error: "Email already exists" });
             }
 
             // Salting passwords
-            let salt = await bcrypt.genSalt(10);
-            let securedPass = await bcrypt.hash(req.body.password, salt);
+            const salt = await bcrypt.genSalt(10);
+            const securedPass = await bcrypt.hash(req.body.password, salt);
 
             // storing user creds in database
             user = await User.create({
@@ -52,7 +51,8 @@ router.post("/createuser",
                 }
             }
             const authToken = jwt.sign(data, JWT_SECRET);
-            res.json({ authToken });
+            success = true; 
+            res.json({ success, authToken });
 
         } catch (err) {
             console.log(err);
@@ -76,25 +76,27 @@ router.post("/login",
         const {email, password} = req.body; 
 
         try{
-            let user = await User.findOne({email}); 
+            let user = await User.findOne({email});
+            let success = false;  
 
             if(!user){
                 return res.status(400).json({error:"Invalid Credentials"}); 
             }
 
-            const passwordCompare = await bcrypt.compare(password,user.password);  
+            const passwordMatch = await bcrypt.compare(password,user.password);  
 
-            if(!passwordCompare){
-                return res.status(400).json({error:"Invalid Credentials"}); 
+            if(!passwordMatch){
+                return res.status(400).json({ success, error:"Invalid Credentials"}); 
             }
 
             const data = {
                 user: {
                     id: user.id
                 }
-            }
+            } 
+            success = true; 
             const authToken = jwt.sign(data, JWT_SECRET);
-            res.json({ authToken });
+            res.json({ success, authToken });
 
         } catch(err){
             console.log(err);
