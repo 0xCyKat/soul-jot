@@ -69,7 +69,7 @@ router.put('/updateNote/:id', fetchUser, async (req, res) => {
     }
     catch (err) {
         console.log(err);
-        res.status(500).json({ "error": "Internal error occured" });
+        res.status(500).json({ "error": "Internal error occured 22 " });
     }
 })
 
