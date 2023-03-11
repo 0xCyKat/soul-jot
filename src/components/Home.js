@@ -4,7 +4,7 @@ import Notes from './Notes';
 function Home() {
 
   return (
-    <div className='container'>
+    <div className='container my-3'>
       <Notes />
     </div>
   );
